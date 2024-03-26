@@ -1,4 +1,3 @@
--- since this is just an example spec, don't actually load anything here and return an empty spec
 -- stylua: ignore
 if true then return {} end
 
@@ -96,6 +95,24 @@ return {
     },
   },
 
+  {
+    "nvimtools/none-ls.nvim",
+    optional = true,
+    opts = function(_, opts)
+      local nls = require("null-ls")
+      opts.sources = opts.sources or {}
+      table.insert(opts.sources, nls.builtins.formatting.prettier)
+    end,
+  },
+  {
+    "jay-babu/mason-null-ls.nvim",
+    event = { "BufReadPre", "BufNewFile" },
+    dependencies = {
+      "williamboman/mason.nvim",
+      "nvimtools/none-ls.nvim",
+    },
+    config = function() end,
+  },
   -- add tsserver and setup with typescript.nvim instead of lspconfig
   {
     "neovim/nvim-lspconfig",
@@ -138,11 +155,19 @@ return {
   -- add more treesitter parsers
   {
     "nvim-treesitter/nvim-treesitter",
+    dependencies = {
+      { "windwp/nvim-ts-autotag" },
+    },
     opts = {
+      autopairs = { enable = true },
+      autotag = { enable = true },
+      indent = { enable = true },
       ensure_installed = {
         "bash",
         "html",
         "javascript",
+        "typescript",
+        "css",
         "json",
         "lua",
         "markdown",
@@ -151,7 +176,6 @@ return {
         "query",
         "regex",
         "tsx",
-        "typescript",
         "vim",
         "yaml",
       },
@@ -209,6 +233,7 @@ return {
         "flake8",
         "tsserver",
         "typescript-language-server",
+        "prettier",
       },
     },
   },
